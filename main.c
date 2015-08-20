@@ -35,17 +35,21 @@ typedef struct
         int y;
 }tpontoLabirinto;
 
-int semSaida = 0;
 
 void checagemEtroca(tpontoLabirinto *, int [][12]);
 
-void verificacaoInicial(tpontoLabirinto *, int [][12]);
+int verificacaoInicial(tpontoLabirinto *, int [][12]);
 
 void imprimeMatriz(int [][12]);
 
+void limpaTudo(tpontoLabirinto *);
+
+int semSaida = 0;
+
 int main()
 {
-    int i, j;
+    int validacao;
+
     int matrizLabirinto[12][12] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                                    1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1,
                                    0, 0, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1,
@@ -55,7 +59,7 @@ int main()
                                    1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1,
                                    1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1,
                                    1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1,
-                                   1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 0, 1,
+                                   1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1,
                                    1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1,
                                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 
@@ -63,26 +67,44 @@ int main()
 
     posicaoInicial = malloc(sizeof(tpontoLabirinto));
 
-    posicaoInicial->x = 2;
+    posicaoInicial->x = 4;
     posicaoInicial->y = 6;
 
-    imprimeMatriz(matrizLabirinto);
+    validacao = verificacaoInicial(posicaoInicial, matrizLabirinto);
 
-    checagemEtroca(posicaoInicial, matrizLabirinto);
+    if (validacao == 1)
+    {
+        imprimeMatriz(matrizLabirinto);
+
+        checagemEtroca(posicaoInicial, matrizLabirinto);
 
 
-    if(semSaida == 1)
-        printf("Labirinto Sem Saida!\n");
+        if(semSaida == 1)
+            printf("Labirinto Sem Saida!\n");
 
-    matrizLabirinto[posicaoInicial->x][posicaoInicial->y] = 3;
+            matrizLabirinto[posicaoInicial->x][posicaoInicial->y] = 3;
 
-    printf("\n\n\n\n");
+            printf("\n\n\n\n");
 
-    imprimeMatriz(matrizLabirinto);
+            imprimeMatriz(matrizLabirinto);
 
+    }
+
+    else
+        printf("Iniciou no labirinto em cima de uma obstrucao!\n");
     return 0;
 }
 
+void limpaTudo(tpontoLabirinto *ponto)
+{
+    free(ponto);
+}
+
+int verificacaoInicial(tpontoLabirinto *posicaoInicial, int matrizLabirinto[12][12])
+{
+    if (matrizLabirinto[posicaoInicial->x][posicaoInicial->y] == 0)
+        return 0;
+}
 
 void imprimeMatriz(int matriz[12][12])
 {
@@ -98,78 +120,77 @@ void imprimeMatriz(int matriz[12][12])
 
 void checagemEtroca(tpontoLabirinto *localAtual, int matriz[12][12])
 {
-    if ((localAtual->x < 11) && (localAtual->y < 11) && (localAtual->x > 0) && (localAtual->y > 0) && (semSaida == 0)) //Se não chegou na ponta da matriz ou não tem saida
+    //Se não chegou nas extremidades da matriz ou se não é um labirinto sem saida executa
+    if ((localAtual->x < 11) && (localAtual->y < 11) && (localAtual->x > 0) && (localAtual->y > 0) && (semSaida == 0))
     {
-        if (matriz[localAtual->x][localAtual->y + 1] == 1)
+        if (matriz[localAtual->x][localAtual->y + 1] == 1) //Verifica se passagem a direita está livre
         {
-            matriz[localAtual->x][localAtual->y] = 3;
-            localAtual->y++; //Anda
+            matriz[localAtual->x][localAtual->y] = 3; //Coloca lugar por onde passou como 3
+            localAtual->y++; //Anda para onde achou passagem livre
             checagemEtroca(localAtual, matriz); //Chamada Recursiva
         }
 
-        else if (matriz[localAtual->x - 1][localAtual->y] == 1)
+        else if (matriz[localAtual->x - 1][localAtual->y] == 1) //Verifica se passagem abaixo está livre
         {
-            matriz[localAtual->x][localAtual->y] = 3;
-            localAtual->x--;
-            checagemEtroca(localAtual, matriz);
+            matriz[localAtual->x][localAtual->y] = 3; //Coloca lugar por onde passou como 3
+            localAtual->x--; //Anda para onde achou passagem livre
+            checagemEtroca(localAtual, matriz); //Chamada Recursiva
         }
 
-        else if(matriz[localAtual->x][localAtual->y - 1] == 1)
+        else if(matriz[localAtual->x][localAtual->y - 1] == 1) //Verifica se passagema esquerda está livre
         {
-            matriz[localAtual->x][localAtual->y] = 3;
-            localAtual->y--;
-            checagemEtroca(localAtual, matriz);
+            matriz[localAtual->x][localAtual->y] = 3; //Coloca lugar por onde passou como 3
+            localAtual->y--; //Anda para onde achou passagem livre
+            checagemEtroca(localAtual, matriz); //Chamada Recursiva
         }
 
-        else if(matriz[localAtual->x + 1][localAtual->y] == 1)
+        else if(matriz[localAtual->x + 1][localAtual->y] == 1) //Verifica se passagem acima está livre
         {
-            matriz[localAtual->x][localAtual->y] = 3;
-            localAtual->x++;
-            checagemEtroca(localAtual, matriz);
+            matriz[localAtual->x][localAtual->y] = 3; //Coloca lugar por onde passou como 3
+            localAtual->x++; //Anda para onde achou passagem livre
+            checagemEtroca(localAtual, matriz); //Chamada Recursiva
         }
 
-        else  //Se não tiver nenhum 1, vai procurar por 3 pra voltar e mudar onde nao tem saida para 4
+        else  //Se não tiver nenhuma passagem livre, vai procurar por onde passou pra voltar e muda onde nao tem saida para 4
         {
-            if (matriz[localAtual->x][localAtual->y +  1] == 3)
+            if (matriz[localAtual->x][localAtual->y +  1] == 3) //Verifica se passou antes pela direita
             {
-                matriz[localAtual->x][localAtual->y] = 4;
-                localAtual->y++;
-                printf("x: %d y %d  1\n", localAtual->x, localAtual->y);
-                checagemEtroca(localAtual, matriz);
+                matriz[localAtual->x][localAtual->y] = 4; //Coloca aviso de passagem sem saida
+                localAtual->y++; //Volta para posição anterior
+                checagemEtroca(localAtual, matriz); //Chamada Recursiva
             }
 
-            else if (matriz[localAtual->x - 1][localAtual->y] == 3)
+            else if (matriz[localAtual->x - 1][localAtual->y] == 3) //Verifica se passou antes por baixo
             {
-                matriz[localAtual->x][localAtual->y] = 4;
-                localAtual->x--;
-                printf("x: %d y %d  2\n", localAtual->x, localAtual->y);
-                checagemEtroca(localAtual, matriz);
+                matriz[localAtual->x][localAtual->y] = 4; //Coloca aviso de passagem sem saida
+                localAtual->x--; //Volta para posição anterior
+                checagemEtroca(localAtual, matriz); //Chamada Recursiva
             }
 
-            else if (matriz[localAtual->x][localAtual->y - 1] == 3)
+            else if (matriz[localAtual->x][localAtual->y - 1] == 3) //Verifica se passou antes pela esquerda
             {
-                matriz[localAtual->x][localAtual->y] = 4;
-                localAtual->y--;
-                printf("x: %d y %d  3\n", localAtual->x, localAtual->y);
-                checagemEtroca(localAtual, matriz);
+                matriz[localAtual->x][localAtual->y] = 4; //Coloca aviso de passagem sem saida
+                localAtual->y--; //Volta para posição anterior
+                checagemEtroca(localAtual, matriz); //Chamada Recursiva
             }
 
-            else if (matriz[localAtual->x + 1][localAtual->y] == 3)
+            else if (matriz[localAtual->x + 1][localAtual->y] == 3) //Verifica se passou antes por cima
             {
-                matriz[localAtual->x][localAtual->y] = 4;
-                localAtual->x++;
-                printf("x: %d y %d  4\n", localAtual->x, localAtual->y);
-                checagemEtroca(localAtual, matriz);
+                matriz[localAtual->x][localAtual->y] = 4; //Coloca aviso de passagem sem saida
+                localAtual->x++; //Volta para posição anterior
+                checagemEtroca(localAtual, matriz); //Chamada Recursiva
             }
 
-            else //Se não achar mais nenhum lugar com 3 nem 1, não tem saida
+            else //Se não achar mais nenhuma passagem obstruida nem passagem livre então não tem saida
             {
                 semSaida = 1;
                 return;
-            }
-        }
+            } //Fim do If.......
+
+        }//Fim do If.....
     }
 
-    else
+    else //Se já chegou no final ou não tem saida termina programa
         return;
+    //Fim do IF.....
 }
