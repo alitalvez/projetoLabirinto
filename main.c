@@ -5,10 +5,10 @@
 * Autor: Gabriel Rodrigues dos Santos
 *
 * Data de Criação: 18/08/2015
-* Última modificação: 19/08/2015
+* Última modificação: 20/08/2015
 *
 * Descrição: O programa tem como objetivo achar a saida de um labirinto qualquer
-* usando condicionais, if e else, e uma unica função recursiva, a função checagemEtroca.
+* usando condicionais, if e else, e uma unica função recursiva, a função ChecagemETroca.
 * O programa recebe o labirinto e a localização e informa como sair do mesmo.
 * O labirinto é composto de elementos booleanos inicialmente, onde "0"(falso) representa uma
 * obstrução e "1"(verdade) representa uma passagem livre. Após o programa achar a saida do labirinto,
@@ -19,36 +19,167 @@
 * linha é informado a dimensão do labirinto quadrado e na terceira linha em diante
 * é informado a matriz do labirinto com os elementos booleanos do labirinto.
 *
+* Exemplo: Usuario cria um arquivo qualquer .txt e nele informa
+*   Arquivo.txt
+*  __________
+*  | 5  4   |
+*  | 5      |
+*  | 11111  |
+*  | 10101  |
+*  | 10101  |
+*  | 10110  |
+*  | 00000  |
+*  ¨¨¨¨¨¨¨¨¨¨
+*
 * Saída: O programa processa as informações do usuario e gera uma matriz mostrando
 * o caminho de saida. Onde os algarismos "3" na matriz, representa por onde o usuario
 * deve passar para sair do labirinto e quando não há nenhuma saida, o programa
 * exibe a mensagem "Labirinto Sem Saida!".
 *
+* Exemplo: Recebido arquivo.txt o programa retorna
+*
+*  Saida.txt
+*  __________
+*  | 11311  |
+*  | 10301  |
+*  | 10301  |
+*  | 10330  |
+*  | 00000  |
+*  ¨¨¨¨¨¨¨¨¨¨
+*
 ****/
 
+//Chamada de bibliotecas
 #include <stdio.h>
 #include <stdlib.h>
 
+
+//Estrutura que armazena o ponto informado pelo usuario
 typedef struct
 {
         int x;
         int y;
-}tpontoLabirinto;
+}tPontoLabirinto;
 
 
-void checagemEtroca(tpontoLabirinto *, int [][12]);
+void ChecagemETroca(tPontoLabirinto *, int [][12]);
+/****
+*
+* Título: ChecagemETroca
+*
+* Autor: Gabriel Rodrigues dos Santos
+*
+* Data de Criação: 18/08/2015
+* Última modificação: 19/08/2015
+*
+* Descrição: A função ChecagemETroca verifica se existe algum caminho livre ao
+* redor da posição atual do ponto e se essa posição existir, então ele se move
+* para a nova posição, livre. Se houver alguma bifurcação no caminho o ponto irá
+* se mover para um dos lados até encontrar a saida ou um caminho sem saida. Caso
+* encontre um caminho sem saida, então o ponto irá retornar até o local da bifurcação
+* e ir pelo outro caminho, assim ocorre em qualquer bifurcação.
+*
+* Parâmetros:
+* Entrada: Um ponteiro para o tipo tPontoLabirinto e uma matriz
+* de numeros inteiros.
+* Saida: Durante a execução modifica valores na matriz, onde o ponto anda,
+* ela muda inicialmente para 3, e se achar um caminho sem saida,
+* ela retorna por onde veio e muda o caminho para 4.
+*
+*
+* Valor de retorno: Esta função retorna void.
+*
+****/
 
-int verificacaoInicial(tpontoLabirinto *, int [][12]);
+int VerificacaoInicial(tPontoLabirinto *, int [][12]);
+/****
+*
+* Título: VerificacaoInicial
+*
+* Autor: Gabriel Rodrigues dos Santos
+*
+* Data de Criação: 19/08/2015
+* Última modificação: 20/08/2015
+*
+* Descrição: A função verifica se as coordenadas informas pelo usuario são validas,
+* se não é maior que o tamanho da matriz e se não deixou o ponto inicial em cima
+* de uma obstrução.
+*
+* Parâmetros:
+* Entrada: Um ponteiro do tipo tPontoLabirinto e uma matriz de numeros inteiros.
+* Saida: Nenhuma saida visivel pela interface do usuario.
+*
+*
+* Valor de retorno: Função retorna falso.
+*
+****/
 
-void imprimeMatriz(int [][12]);
+void ImprimeMatriz(int [][12]);
+/****
+*
+* Título: ImprimeMatriz
+*
+* Autor: Gabriel Rodrigues dos Santos
+*
+* Data de Criação: 19/08/2015
+* Última modificação: 19/08/2015
+*
+* Descrição: Imprime na tela uma matriz qualquer de numeros inteiros;
+*
+* Parâmetros:
+* Entrada: Uma matriz de numeros inteiros.
+* Saida: Impressão da matriz na tela.
+*
+* Valor de retorno: Função retorna void.
+*
+****/
 
-void limpaTudo(tpontoLabirinto *);
+void LimpaTudo(tPontoLabirinto *);
+/****
+*
+* Título: LimpaTudo
+*
+* Autor: Gabriel Rodrigues dos Santos
+*
+* Data de Criação: 19/08/2015
+* Última modificação: 19/08/2015
+*
+* Descrição: Serve como destrutor, limpa da memoria as variaveis alocadas.
+*
+* Parâmetros:
+* Entrada: Um ponteiro do tipo tPontoLabirinto.
+* Saida: Limpa variavel da memoria.
+*
+* Valor de retorno: Função retorna void.
+*
+****/
 
-int semSaida = 0;
+void LimpaCaminho(int [][12]);
+/****
+*
+* Título: LimpaCaminho
+*
+* Autor: Gabriel Rodrigues dos Santos
+*
+* Data de Criação: 20/08/2015
+* Última modificação: 20/08/2015
+*
+* Descrição: Limpa lugares onde existe caminho sem saida, que estão sinalizados
+* com 4. Lê a matriz do labrinto procurando por 4 e substitui por 1.
+*
+* Parâmetros:
+* Entrada: Uma matriz de números inteiros.
+* Saida: Elementos da matriz com valor 4 mudam para 1.
+*
+* Valor de retorno: Função retorna void.
+*
+****/
+
+int semSaida = 0; //Variavel Global que armazena a falso se o labirinto tiver saida, verdade se sem saida
 
 int main()
 {
-    int validacao;
+    int validacao; //Armazena o retorno de verificação da posição inicial
 
     int matrizLabirinto[12][12] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                                    1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1,
@@ -63,62 +194,79 @@ int main()
                                    1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1,
                                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 
-    tpontoLabirinto *posicaoInicial;
+    tPontoLabirinto *posicaoInicial; //Posição inicial informada pelo usuario x e y
 
-    posicaoInicial = malloc(sizeof(tpontoLabirinto));
+    posicaoInicial = malloc(sizeof(tPontoLabirinto)); //Alocação do ponto na matriz
 
-    posicaoInicial->x = 4;
+    //Atribuição de valores ao ponto
+    posicaoInicial->x = 2;
     posicaoInicial->y = 6;
+    ////////////////////////
 
-    validacao = verificacaoInicial(posicaoInicial, matrizLabirinto);
+    //validação da localização inicial
+    validacao = VerificacaoInicial(posicaoInicial, matrizLabirinto);
 
-    if (validacao == 1)
+    if (validacao == 1) //Se localização for verdade chama as funções de funcionamento
     {
-        imprimeMatriz(matrizLabirinto);
+        ChecagemETroca(posicaoInicial, matrizLabirinto); //Chamada da função com a matriz informada e a localização
 
-        checagemEtroca(posicaoInicial, matrizLabirinto);
-
-
-        if(semSaida == 1)
+        if(semSaida == 1) //Caso não haja saida do labirinto
             printf("Labirinto Sem Saida!\n");
 
-            matrizLabirinto[posicaoInicial->x][posicaoInicial->y] = 3;
+        matrizLabirinto[posicaoInicial->x][posicaoInicial->y] = 3; //Coloca ultimo passo dado para sair do labirinto
 
-            printf("\n\n\n\n");
+        LimpaCaminho(matrizLabirinto); //Chama função de limpar caminho sem saida
 
-            imprimeMatriz(matrizLabirinto);
+        ImprimeMatriz(matrizLabirinto); //Chama função de impressão
 
     }
 
     else
         printf("Iniciou no labirinto em cima de uma obstrucao!\n");
+    /*Fim do if validação*/
     return 0;
-}
 
-void limpaTudo(tpontoLabirinto *ponto)
-{
-    free(ponto);
-}
+} /*Fim da função main*/
 
-int verificacaoInicial(tpontoLabirinto *posicaoInicial, int matrizLabirinto[12][12])
-{
-    if (matrizLabirinto[posicaoInicial->x][posicaoInicial->y] == 0)
-        return 0;
-}
-
-void imprimeMatriz(int matriz[12][12])
+void LimpaCaminho (int matriz[][12])
 {
     int i, j;
+    for (i = 0; i < 12; i++)
+    {
+        for (j = 0; j < 12; j++)
+            if (matriz[i][j] == 4)
+                matriz[i][j] = 1; //Normaliza os caminhos sem saida
+        //Fim do for j
+    } //Fim do for i
+}
+
+void LimpaTudo(tPontoLabirinto *ponto)
+{
+    free(ponto); //Liberando memoria
+}
+
+int VerificacaoInicial(tPontoLabirinto *posicaoInicial, int matrizLabirinto[12][12])
+{
+    if (matrizLabirinto[posicaoInicial->x][posicaoInicial->y] == 0 && (posicaoInicial->x > 12) && (posicaoInicial->y > 12))
+        return 0;
+    return 1;
+}
+
+void ImprimeMatriz(int matriz[12][12])
+{
+    int i, j;
+    //Impressão do labirinto resolvido na tela
     for(i = 0; i < 12; i++)
     {
         for(j = 0; j < 12; j++)
             printf("%d  ", matriz[i][j]);
+        //Fim do for j
         printf("\n");
-    }
+    }//Fim do for i
 }
 
 
-void checagemEtroca(tpontoLabirinto *localAtual, int matriz[12][12])
+void ChecagemETroca(tPontoLabirinto *localAtual, int matriz[12][12])
 {
     //Se não chegou nas extremidades da matriz ou se não é um labirinto sem saida executa
     if ((localAtual->x < 11) && (localAtual->y < 11) && (localAtual->x > 0) && (localAtual->y > 0) && (semSaida == 0))
@@ -127,28 +275,28 @@ void checagemEtroca(tpontoLabirinto *localAtual, int matriz[12][12])
         {
             matriz[localAtual->x][localAtual->y] = 3; //Coloca lugar por onde passou como 3
             localAtual->y++; //Anda para onde achou passagem livre
-            checagemEtroca(localAtual, matriz); //Chamada Recursiva
+            ChecagemETroca(localAtual, matriz); //Chamada Recursiva
         }
 
         else if (matriz[localAtual->x - 1][localAtual->y] == 1) //Verifica se passagem abaixo está livre
         {
             matriz[localAtual->x][localAtual->y] = 3; //Coloca lugar por onde passou como 3
             localAtual->x--; //Anda para onde achou passagem livre
-            checagemEtroca(localAtual, matriz); //Chamada Recursiva
+            ChecagemETroca(localAtual, matriz); //Chamada Recursiva
         }
 
         else if(matriz[localAtual->x][localAtual->y - 1] == 1) //Verifica se passagema esquerda está livre
         {
             matriz[localAtual->x][localAtual->y] = 3; //Coloca lugar por onde passou como 3
             localAtual->y--; //Anda para onde achou passagem livre
-            checagemEtroca(localAtual, matriz); //Chamada Recursiva
+            ChecagemETroca(localAtual, matriz); //Chamada Recursiva
         }
 
         else if(matriz[localAtual->x + 1][localAtual->y] == 1) //Verifica se passagem acima está livre
         {
             matriz[localAtual->x][localAtual->y] = 3; //Coloca lugar por onde passou como 3
             localAtual->x++; //Anda para onde achou passagem livre
-            checagemEtroca(localAtual, matriz); //Chamada Recursiva
+            ChecagemETroca(localAtual, matriz); //Chamada Recursiva
         }
 
         else  //Se não tiver nenhuma passagem livre, vai procurar por onde passou pra voltar e muda onde nao tem saida para 4
@@ -157,40 +305,40 @@ void checagemEtroca(tpontoLabirinto *localAtual, int matriz[12][12])
             {
                 matriz[localAtual->x][localAtual->y] = 4; //Coloca aviso de passagem sem saida
                 localAtual->y++; //Volta para posição anterior
-                checagemEtroca(localAtual, matriz); //Chamada Recursiva
+                ChecagemETroca(localAtual, matriz); //Chamada Recursiva
             }
 
             else if (matriz[localAtual->x - 1][localAtual->y] == 3) //Verifica se passou antes por baixo
             {
                 matriz[localAtual->x][localAtual->y] = 4; //Coloca aviso de passagem sem saida
                 localAtual->x--; //Volta para posição anterior
-                checagemEtroca(localAtual, matriz); //Chamada Recursiva
+                ChecagemETroca(localAtual, matriz); //Chamada Recursiva
             }
 
             else if (matriz[localAtual->x][localAtual->y - 1] == 3) //Verifica se passou antes pela esquerda
             {
                 matriz[localAtual->x][localAtual->y] = 4; //Coloca aviso de passagem sem saida
                 localAtual->y--; //Volta para posição anterior
-                checagemEtroca(localAtual, matriz); //Chamada Recursiva
+                ChecagemETroca(localAtual, matriz); //Chamada Recursiva
             }
 
             else if (matriz[localAtual->x + 1][localAtual->y] == 3) //Verifica se passou antes por cima
             {
                 matriz[localAtual->x][localAtual->y] = 4; //Coloca aviso de passagem sem saida
                 localAtual->x++; //Volta para posição anterior
-                checagemEtroca(localAtual, matriz); //Chamada Recursiva
+                ChecagemETroca(localAtual, matriz); //Chamada Recursiva
             }
 
             else //Se não achar mais nenhuma passagem obstruida nem passagem livre então não tem saida
             {
                 semSaida = 1;
                 return;
-            } //Fim do If.......
+            } //Fim do if matriz[][] == 3
 
-        }//Fim do If.....
+        }//Fim do if matriz[][] == 1
     }
 
     else //Se já chegou no final ou não tem saida termina programa
         return;
-    //Fim do IF.....
+    //Fim do if extremidades ou semSaida
 }
