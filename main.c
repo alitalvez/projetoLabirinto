@@ -57,8 +57,8 @@
 //Estrutura que armazena o ponto informado pelo usuario
 typedef struct
 {
-        int x;
-        int y;
+        int x; //Ponto na matriz com sentido vertical
+        int y; //Ponto na matriz com sentido horizontal
 }tPontoLabirinto;
 
 
@@ -110,7 +110,7 @@ int VerificacaoInicial(tPontoLabirinto *, int [][12]);
 * Saida: Nenhuma saida visivel pela interface do usuario.
 *
 *
-* Valor de retorno: Função retorna falso.
+* Valor de retorno: Função retorna falso ou verdade.
 *
 ****/
 
@@ -175,11 +175,16 @@ void LimpaCaminho(int [][12]);
 *
 ****/
 
-int semSaida = 0; //Variavel Global que armazena a falso se o labirinto tiver saida, verdade se sem saida
+int criaInterface();
+
+int semSaida = 0; //Variavel Global que armazena falso se o labirinto tiver saida, verdade se sem saida
 
 int main()
 {
+
     int validacao; //Armazena o retorno de verificação da posição inicial
+
+    int opcao;
 
     int matrizLabirinto[12][12] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                                    1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1,
@@ -198,35 +203,76 @@ int main()
 
     posicaoInicial = malloc(sizeof(tPontoLabirinto)); //Alocação do ponto na matriz
 
-    //Atribuição de valores ao ponto
-    posicaoInicial->x = 2;
-    posicaoInicial->y = 6;
-    ////////////////////////
+    printf("Bem Vindo ao Busca Saida 3000!\nAutor:Gabriel Rodrigues dos Santos\n");
+    //Print de boas vindas
 
-    //validação da localização inicial
-    validacao = VerificacaoInicial(posicaoInicial, matrizLabirinto);
+    do{
+    opcao = criaInterface();
 
-    if (validacao == 1) //Se localização for verdade chama as funções de funcionamento
-    {
-        ChecagemETroca(posicaoInicial, matrizLabirinto); //Chamada da função com a matriz informada e a localização
+    switch (opcao) {
+        case 1:
+        system("cls || clear");
+        //Atribuição de valores ao ponto
+        posicaoInicial->x = 2;
+        posicaoInicial->y = 6;
+        ////////////////////////
 
-        if(semSaida == 1) //Caso não haja saida do labirinto
-            printf("Labirinto Sem Saida!\n");
+        //validação da localização inicial
+        validacao = VerificacaoInicial(posicaoInicial, matrizLabirinto);
 
-        matrizLabirinto[posicaoInicial->x][posicaoInicial->y] = 3; //Coloca ultimo passo dado para sair do labirinto
+        if (validacao == 1) //Se localização for verdade chama as funções de funcionamento
+        {
+            ChecagemETroca(posicaoInicial, matrizLabirinto); //Chamada da função com a matriz informada e a localização
 
-        LimpaCaminho(matrizLabirinto); //Chama função de limpar caminho sem saida
+            if(semSaida == 1) //Caso não haja saida do labirinto
+                printf("Labirinto Sem Saida!\n");
 
-        ImprimeMatriz(matrizLabirinto); //Chama função de impressão
+            matrizLabirinto[posicaoInicial->x][posicaoInicial->y] = 3; //Coloca ultimo passo dado para sair do labirinto
+
+            LimpaCaminho(matrizLabirinto); //Chama função de limpar caminho sem saida
+
+            ImprimeMatriz(matrizLabirinto); //Chama função de impressão
+
+        }
+
+        else
+            printf("Iniciou no labirinto em cima de uma obstrucao!\n");
+        /*Fim do if validação*/
+        break;
+
+        case 2:
+        system("cls || clear");
+        printf("O Busca Saida 3000 tem como objetivo achar a saida de qualquer labirinto quadrado,");
+        printf("basta entrar com o labirinto e ele mostrara por onde sair.\nVoce vai precisar criar um arquivo de texto com as seguintes ");
+        printf("informações:\nNa primeira linha informe a dimensao do labirinto quadrado.\nNa segunda linha informe a posicao x e y inicial ");
+        printf("no labirinto.\nNa terceira linha em diante informe os elementos booleanos do labirinto.\nMas lembre-se, ");
+        printf("0 significa caminho obstruido e 1 caminho livre.\nDivirta-se!\n\n");
+        printf("\n\nAutor: Gabriel Rodrigues dos Santos.\nData de Criacao: 18/08/2015.\n");
+        printf("Programa totalmente desenvolvido no editor de textos Atom para Ubuntu Linux.\nVersao: 1.0 Beta");
+        break;
+
+        case 3:
+        exit(-1);
+
+        default:
+        system("cls || clear");
+        printf("Digite uma opcao valida!\n");
 
     }
+    }while(opcao != 3);
 
-    else
-        printf("Iniciou no labirinto em cima de uma obstrucao!\n");
-    /*Fim do if validação*/
     return 0;
 
 } /*Fim da função main*/
+
+int criaInterface()
+{
+    int menu;
+    printf("Menu Principal:\n(1) Carregar Arquivo de Labirinto.\n(2) Sobre e Instrucoes.\n(3) Sair.\n");
+    printf("Informe a opcao desejada, 1, 2 ou 3.: ");
+    scanf("%d", &menu);
+    return menu;
+}
 
 void LimpaCaminho (int matriz[][12])
 {
@@ -246,10 +292,10 @@ void LimpaTudo(tPontoLabirinto *ponto)
 }
 
 int VerificacaoInicial(tPontoLabirinto *posicaoInicial, int matrizLabirinto[12][12])
-{
-    if (matrizLabirinto[posicaoInicial->x][posicaoInicial->y] == 0 && (posicaoInicial->x > 12) && (posicaoInicial->y > 12))
-        return 0;
-    return 1;
+{ //Verifica se a posição inicial do labirinto é em cima de uma passagem obstruida e se está fora do tamanho da matriz
+    if (matrizLabirinto[posicaoInicial->x][posicaoInicial->y] == 1 && (posicaoInicial->x > 12) && (posicaoInicial->y > 12))
+        return 0; //Se sim, retorna falso
+    return 1; //Se não, retorna verdade
 }
 
 void ImprimeMatriz(int matriz[12][12])
