@@ -14,13 +14,13 @@
 * obstrução e "1"(verdade) representa uma passagem livre. Após o programa achar a saida do labirinto,
 * ele diz por onde deve-se ir para sair, através de um caminho de algarismos "3".
 *
-* Entrada: Espera-se que o usuario entre com um arquivo "*.txt", onde na primeira
+* Entrada: Espera-se que o usuario entre com um arquivo "Labirinto.txt", onde na primeira
 * linha é informado a posição inicial no labirinto com coordenadas, x e y, na segunda
 * linha é informado a dimensão do labirinto quadrado e na terceira linha em diante
 * é informado a matriz do labirinto com os elementos booleanos do labirinto.
 *
-* Exemplo: Usuario cria um arquivo qualquer .txt e nele informa
-*   Arquivo.txt
+* Exemplo: Usuario cria um arquivo chamado Labirinto.txt e nele informa
+*   Labirinto.txt
 *  __________
 *  | 5  4   |
 *  | 5      |
@@ -36,9 +36,9 @@
 * deve passar para sair do labirinto e quando não há nenhuma saida, o programa
 * exibe a mensagem "Labirinto Sem Saida!".
 *
-* Exemplo: Recebido arquivo.txt o programa retorna
+* Exemplo: Recebido Labirinto.txt o programa retorna
 *
-*  Saida.txt
+*  SaidaLabirinto.txt
 *  __________
 *  | 11311  |
 *  | 10301  |
@@ -50,8 +50,8 @@
 ****/
 
 //Chamada de bibliotecas
-#include < stdio.h >
-#include < stdlib.h >
+#include <stdio.h>
+#include <stdlib.h>
 
 
 //Estrutura que armazena o ponto informado pelo usuario
@@ -199,7 +199,7 @@ int criaInterface();
 
 int semSaida = 0; //Variavel Global que armazena falso se o labirinto tiver saida, verdade se sem saida
 
-int main()
+int main( int argc , char const *argv[] )
 {
 
     int validacao; //Armazena o retorno de verificação da posição inicial
@@ -222,6 +222,11 @@ int main()
     tPontoLabirinto *posicaoInicial; //Posição inicial informada pelo usuario x e y
 
     posicaoInicial = malloc( sizeof( tPontoLabirinto ) ); //Alocação do ponto na matriz
+    if(posicaoInicial == NULL) //Verificação de memoria para a posicaoInicial
+    {
+        printf("Memoria insuficiente, programa sera fechado! ERROR\n");
+        exit(-1);
+    }
 
     printf( "Bem Vindo ao Busca Saida 3000!\nAutor:Gabriel Rodrigues dos Santos\n" );
     //Print de boas vindas
@@ -264,10 +269,11 @@ int main()
             case 2: //Caso "Sobre e Instrucoes"
                 system( "cls || clear" ); //Limpa tela no Linux/Windows
                 printf( "O Busca Saida 3000 tem como objetivo achar a saida de qualquer labirinto quadrado," );
-                printf( "basta entrar com o labirinto e ele mostrara por onde sair.\nVoce vai precisar criar um arquivo de texto com as seguintes " );
+                printf( "basta entrar com o labirinto e ele mostrara por onde sair.\nVoce vai precisar criar um arquivo de texto chamado 'Labirinto' com as seguintes " );
                 printf( "informações:\nNa primeira linha informe a dimensao do labirinto quadrado.\nNa segunda linha informe a posicao x e y inicial " );
                 printf( "no labirinto.\nNa terceira linha em diante informe os elementos booleanos do labirinto.\nMas lembre-se, " );
-                printf( "0 significa caminho obstruido e 1 caminho livre.\nDivirta-se!\n\n" );
+                printf( "0 significa caminho obstruido e 1 caminho livre.\nEm seguida coloque o 'Labirinto.txt' na pasta raiz do programa.\n" );
+                printf( "Após o funcionamento do programa sera criado um arquivo 'SaidaLabirinto.txt' mostrando a saida do labrinto.\nDivirta-se\n\n" );
                 printf( "\n\nAutor: Gabriel Rodrigues dos Santos.\nData de Criacao: 18/08/2015.\n" );
                 printf( "Programa totalmente desenvolvido no editor de textos Atom para Ubuntu Linux.\nVersao: 1.0 Beta\n\n" );
                 //Algumas informações sobre como usar o programa e sobre o programa.
