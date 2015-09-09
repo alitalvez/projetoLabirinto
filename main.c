@@ -15,15 +15,15 @@
 * ele diz por onde deve-se ir para sair, através de um caminho de algarismos "3".
 *
 * Entrada: Espera-se que o usuario entre com um arquivo "Labirinto.txt", onde na primeira
-* linha é informado a posição inicial no labirinto com coordenadas, x e y, na segunda
-* linha é informado a dimensão do labirinto quadrado e na terceira linha em diante
+* linha é informado a dimensao do labirinto quadrado na segunda linha a posicao inicial no labirinto
+* com coordenadas, x e y, e na terceira linha em diante
 * é informado a matriz do labirinto com os elementos booleanos do labirinto.
 *
 * Exemplo: Usuario cria um arquivo chamado Labirinto.txt e nele informa
 *   Labirinto.txt
 *  __________
-*  | 5  4   |
 *  | 5      |
+*  | 4 4    |
 *  | 11111  |
 *  | 10101  |
 *  | 10101  |
@@ -62,7 +62,7 @@ typedef struct
 }tPontoLabirinto;
 
 
-void ChecagemETroca( tPontoLabirinto * , int * , int * );
+void ChecagemETroca( tPontoLabirinto * , int * , const int* );
 /****
 *
 * Título: ChecagemETroca
@@ -92,7 +92,7 @@ void ChecagemETroca( tPontoLabirinto * , int * , int * );
 *
 ****/
 
-int VerificacaoInicial( tPontoLabirinto * , int * , int *);
+int VerificacaoInicial( tPontoLabirinto * , int * , const int* );
 /****
 *
 * Título: VerificacaoInicial
@@ -117,7 +117,7 @@ int VerificacaoInicial( tPontoLabirinto * , int * , int *);
 *
 ****/
 
-void ImprimeMatriz( int * , int * , FILE * );
+void ImprimeMatriz( int * , const int* , FILE * );
 /****
 *
 * Título: ImprimeMatriz
@@ -159,7 +159,7 @@ void LimpaTudo( tPontoLabirinto * , int * , FILE * , FILE * );
 *
 ****/
 
-void LimpaCaminho( int * , int * );
+void LimpaCaminho( int * , const int* );
 /****
 *
 * Título: LimpaCaminho
@@ -204,7 +204,11 @@ int CriaInterface();
 *
 ****/
 
-void LeMatrizPosicao ( FILE * , int * , int * , tPontoLabirinto * );
+void LeMatrizPosicao ( FILE * , int * , const int* , tPontoLabirinto * );
+
+int * AlocaMatriz ( const int* );
+
+tPontoLabirinto * AlocaPonto ( );
 
 
 int semSaida = 0; //Variavel Global que armazena falso se o labirinto tiver saida, verdade se sem saida
@@ -226,7 +230,7 @@ int main( int argc , char const *argv[] )
     tPontoLabirinto *posicaoInicial; //Posição inicial informada pelo usuario x e y
 
     system( "cls || clear" ); //Limpa tela no Linux/Windows
-    printf( "Bem Vindo ao Busca Saida 3000!\nAutor:Gabriel Rodrigues dos Santos\n" );
+    printf( "Bem Vindo ao Busca Saida 3000!\nAutor:Gabriel Rodrigues dos Santos\n\n" );
     //Print de boas vindas
 
     do{ //Inicio da criação do menu
@@ -239,34 +243,15 @@ int main( int argc , char const *argv[] )
 
                 if ( ( entrada = fopen ( "Labirinto.txt" , "r" ) ) == NULL ) //Abertura do labirinto
                 {
-                    printf ( "Arquivo 'Labirinto.txt' nao foi encontrado ou nao pode ser aberto.\n" );
+                    printf ( "Arquivo 'Labirinto.txt' nao foi encontrado ou nao pode ser aberto. Leia as Instrucoes\n" );
                     break;
-                }
-
-                if ( ( saida = fopen ( "SaidaLabirinto.txt" , "w" ) ) == NULL ) //Criação do arquivo de saida do labirinto
-                {
-                    printf( "Arquivo 'SaidaLabirinto.txt' nao pode ser criado.\n" );
-                    break;
-                }
+                }//Fim do if entrada
 
                 fscanf( entrada , "%d\n" , &dimensao ); //Le dimensao da matriz
 
+                posicaoInicial = AlocaPonto( ); //Chamada de alocação
 
-                posicaoInicial = malloc( sizeof ( tPontoLabirinto ) ); //Alocação do ponto na matriz
-
-                if( posicaoInicial == NULL ) //Verificação de memoria para a posicaoInicial
-                {
-                    printf ( "Memoria insuficiente, programa sera fechado! ERROR\n" );
-                    exit ( -1 );
-                }
-
-                matrizLabirinto = malloc( ( dimensao * dimensao ) * sizeof ( int ) ); //Alocação da matriz em formato de vetor
-
-                if( matrizLabirinto == NULL ) //Verificação de memoria para a matrizLabirinto
-                {
-                    printf ( "Memoria insuficiente, programa sera fechado! ERROR\n" );
-                    exit ( -1 );
-                }
+                matrizLabirinto = AlocaMatriz( &dimensao ); //Chamada de alocação
 
                 LeMatrizPosicao( entrada , matrizLabirinto , &dimensao , posicaoInicial ); //Chamada de leitura da matriz e posição
 
@@ -275,23 +260,36 @@ int main( int argc , char const *argv[] )
 
                 if ( validacao == 1 ) //Se localização for verdade chama as funções de funcionamento
                 {
-                    ChecagemETroca( posicaoInicial , matrizLabirinto , &dimensao ); //Chamada da função com a matriz informada e a localização
+                    ChecagemETroca( posicaoInicial , matrizLabirinto , &dimensao ); //Chamada da função de procura do labirinto
 
                     if ( semSaida == 1 ) //Caso não haja saida do labirinto
-                        printf ( "Labirinto Sem Saida!\n" );
+                    {
+                        printf ( "Labirinto Sem Saida!\n\n" );
+                        semSaida = 0;
+                        break;
+                    }//Fim do if semSaida
 
-                        matrizLabirinto[ posicaoInicial->x * dimensao + posicaoInicial->y ] = 3; //Coloca ultimo passo dado para sair do labirinto
+                    matrizLabirinto[ posicaoInicial->x * dimensao + posicaoInicial->y ] = 3; //Coloca ultimo passo dado para sair do labirinto
 
-                        LimpaCaminho ( matrizLabirinto , &dimensao ); //Chama função de limpar caminho sem saida
+                    LimpaCaminho ( matrizLabirinto , &dimensao ); //Chama função de limpar caminho sem saida
 
-                        ImprimeMatriz ( matrizLabirinto , &dimensao , saida ); //Chama função de impressão
 
-                        LimpaTudo ( posicaoInicial , matrizLabirinto , entrada , saida );
+                    if ( ( saida = fopen ( "SaidaLabirinto.txt" , "w" ) ) == NULL ) //Criação do arquivo de saida do labirinto
+                    {
+                        printf( "Arquivo 'SaidaLabirinto.txt' nao pode ser criado. Verifique se o usuario tem permissao para criar arquivos no local.\n\n" );
+                        break;
+                    }//Fim do if saida
+
+
+                    ImprimeMatriz ( matrizLabirinto , &dimensao , saida ); //Chama função de impressão
+
+                    LimpaTudo ( posicaoInicial , matrizLabirinto , entrada , saida ); //Chama funcao de limpeza
+
 
                 }
 
                 else
-                    printf( "Iniciou no labirinto em cima de uma obstrucao!\n" );
+                    printf( "Iniciou no labirinto em cima de uma obstrucao ou posicao inicial no labirinto maior que a dimensao!\n\n" );
                 /*Fim do if validação*/
                 break; //Fim do caso 1
 
@@ -324,11 +322,45 @@ int main( int argc , char const *argv[] )
 } /*Fim da função main*/
 
 
-void LeMatrizPosicao(FILE *entrada , int *matriz , int *dimensao , tPontoLabirinto *ponto )
+tPontoLabirinto * AlocaPonto ( )
+{
+    tPontoLabirinto *ponto;
+
+    ponto = malloc( sizeof ( tPontoLabirinto ) ); //Alocação do ponto na matriz
+
+    if( ponto == NULL ) //Verificação de memoria para a posicaoInicial
+    {
+        printf ( "Memoria insuficiente, programa sera fechado! ERROR\n" );
+        exit ( -1 );
+    }//Fim do if ponto == NULL
+
+    return ponto;
+
+}
+
+int * AlocaMatriz ( const int*dimensao )
+{
+    int *matriz;
+
+    matriz = malloc( ( *dimensao * *dimensao ) * sizeof ( int ) ); //Alocação da matriz em formato de vetor
+
+    if( matriz == NULL ) //Verificação de memoria para a matrizLabirinto
+    {
+        printf ( "Memoria insuficiente, programa sera fechado! ERROR\n" );
+        exit ( -1 );
+    }//Fim do if matriz == NULL
+
+    return matriz;
+}
+
+void LeMatrizPosicao(FILE *entrada , int *matriz , const int*dimensao , tPontoLabirinto *ponto )
 {
 
     //Atribuição de valores ao ponto
     fscanf ( entrada , "%d %d\n" , &( ponto->y ) , &( ponto->x ) );
+
+    ponto->x--; /* "Normaliza" os pontos para trabalhar na matriz corretamente */
+    ponto->y--;
 
     //Leitura da matriz
     int i, j;
@@ -336,8 +368,9 @@ void LeMatrizPosicao(FILE *entrada , int *matriz , int *dimensao , tPontoLabirin
     {
         for(j = 0; j < *dimensao; j++)
             fscanf(entrada , "%d", &matriz[i * *dimensao + j]);
+            //Fim do for j
         fscanf(entrada , "\n");
-    }
+    }//Fim do for i
 }
 
 
@@ -372,10 +405,24 @@ void LimpaTudo( tPontoLabirinto *ponto , int *matrizLabirinto , FILE *entrada , 
 }
 
 int VerificacaoInicial( tPontoLabirinto *posicaoInicial , int *matrizLabirinto , int *dimensao )
-{ //Verifica se a posição inicial do labirinto é em cima de uma passagem obstruida e se está fora do tamanho da matriz
-    if ( ( matrizLabirinto[ posicaoInicial->x * *dimensao + posicaoInicial->y ] == 1 ) && ( posicaoInicial->x > *dimensao ) && ( posicaoInicial->y > *dimensao ) )
+{
+    /////////Verificação de todos os elementos da matriz 0 ou 1
+    int i, j;
+    for ( i = 0 ; i < *dimensao ; i++ )
+    {
+        for ( j = 0 ; j < *dimensao ; j++ )
+        {
+            if ( ( matrizLabirinto[ i * *dimensao + j ] != 0 ) && ( matrizLabirinto[ i * *dimensao + j] != 1 ) )
+                return 0;//Se achar algum numero diferente de 0 e 1 retorna falso
+        }
+    }
+    if ( ( matrizLabirinto[ posicaoInicial->x * *dimensao + posicaoInicial->y ] == 0 ) ) //Se estiver em uma passagem obstruida
+        return 0; //Se sim retorna falso
+    else if ( ( ( posicaoInicial->x + 1 ) > *dimensao ) || ( ( posicaoInicial->y + 1 ) > *dimensao )  ) //Se estiver fora da matriz
         return 0; //Se sim, retorna falso
-    return 1; //Se não, retorna verdade
+    else
+        return 1; //Se não, retorna verdade
+    //Fim do if matrizLabirinto
 }
 
 void ImprimeMatriz( int *matriz , int *dimensao , FILE *saida )
