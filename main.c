@@ -15,15 +15,15 @@
 * ele diz por onde deve-se ir para sair, através de um caminho de algarismos "3".
 *
 * Entrada: Espera-se que o usuario entre com um arquivo "Labirinto.txt", onde na primeira
-* linha é informado a dimensao do labirinto quadrado na segunda linha a posicao inicial no labirinto
-* com coordenadas, x e y, e na terceira linha em diante
+* linha é informado  a posicao inicial no labirinto com coordenadas, x e y,
+* na segunda linha a dimensao do labirinto quadrado e na terceira linha em diante
 * é informado a matriz do labirinto com os elementos booleanos do labirinto.
 *
 * Exemplo: Usuario cria um arquivo chamado Labirinto.txt e nele informa
 *   Labirinto.txt
 *  __________
-*  | 5      |
 *  | 4 4    |
+*  | 5      |
 *  | 11111  |
 *  | 10101  |
 *  | 10101  |
@@ -182,7 +182,7 @@ void LimpaCaminho( int * , const int* );
 *
 ****/
 
-int CriaInterface();
+int CriaInterface( int );
 /****
 *
 * Título: CriaInterface
@@ -195,7 +195,7 @@ int CriaInterface();
 * Descrição: Cria o menu interativo com o usuario.
 *
 *
-* Parâmetros: Não recebe nenhum argumento.
+* Parâmetros: Recebe um inteiro para saber qual parte do menu criar.
 *
 * Entrada: Não recebe nenhum argumento.
 * Saida: Menu com opções para inicio de programa, Instrucoes e saida.
@@ -204,7 +204,7 @@ int CriaInterface();
 *
 ****/
 
-void LeMatrizPosicao ( FILE * , int * , const int* , tPontoLabirinto * );
+void LeMatriz ( FILE * , int * , const int * );
 
 int * AlocaMatriz ( const int* );
 
@@ -235,7 +235,7 @@ int main( int argc , char const *argv[] )
 
     do{ //Inicio da criação do menu
 
-        opcao = CriaInterface(); //Chamada da função de criação do menu
+        opcao = CriaInterface( 0 ); //Chamada da função de criação do menu
 
         switch ( opcao ) { //Seleciona as opções do menu
             case 1: //Caso "Carregar arquivo de labirinto e achar saida"
@@ -247,13 +247,20 @@ int main( int argc , char const *argv[] )
                     break;
                 }//Fim do if entrada
 
-                fscanf( entrada , "%d\n" , &dimensao ); //Le dimensao da matriz
 
-                posicaoInicial = AlocaPonto( ); //Chamada de alocação
+                posicaoInicial = AlocaPonto ( ); //Aloca ponto
 
-                matrizLabirinto = AlocaMatriz( &dimensao ); //Chamada de alocação
+                //Atribuição de valores ao ponto
+                fscanf ( entrada , "%d %d\n" , &( posicaoInicial->y ) , &( posicaoInicial->x ) );
 
-                LeMatrizPosicao( entrada , matrizLabirinto , &dimensao , posicaoInicial ); //Chamada de leitura da matriz e posição
+                posicaoInicial->x--; /* "Normaliza" os pontos para trabalhar na matriz corretamente */
+                posicaoInicial->y--;
+
+                fscanf( entrada , "%d\n" , &dimensao );
+
+                matrizLabirinto = AlocaMatriz( &dimensao );
+
+                LeMatriz( entrada , matrizLabirinto , &dimensao ); //Chamada de leitura da matriz
 
                 //validação da localização inicial
                 validacao = VerificacaoInicial( posicaoInicial , matrizLabirinto , &dimensao );
@@ -294,16 +301,7 @@ int main( int argc , char const *argv[] )
                 break; //Fim do caso 1
 
             case 2: //Caso "Sobre e Instrucoes"
-                system( "cls || clear" ); //Limpa tela no Linux/Windows
-                printf( "O Busca Saida 3000 tem como objetivo achar a saida de qualquer labirinto quadrado," );
-                printf( "basta entrar com o labirinto e ele mostrara por onde sair.\nVoce vai precisar criar um arquivo de texto chamado 'Labirinto' com as seguintes " );
-                printf( "informações:\nNa primeira linha informe a dimensao do labirinto quadrado.\nNa segunda linha informe a posicao x e y inicial " );
-                printf( "no labirinto.\nNa terceira linha em diante informe os elementos booleanos do labirinto.\nMas lembre-se, " );
-                printf( "0 significa caminho obstruido e 1 caminho livre.\nEm seguida coloque o 'Labirinto.txt' na pasta raiz do programa.\n" );
-                printf( "Após o funcionamento do programa sera criado um arquivo 'SaidaLabirinto.txt' mostrando a saida do labrinto.\nDivirta-se\n\n" );
-                printf( "\n\nAutor: Gabriel Rodrigues dos Santos.\nData de Criacao: 18/08/2015.\n" );
-                printf( "Programa totalmente desenvolvido no editor de textos Atom para Ubuntu Linux.\nVersao: 1.0 Beta\n\n" );
-                //Algumas informações sobre como usar o programa e sobre o programa.
+                    opcao = CriaInterface( 1 ); //Chama funcao para escrever o sobre e já seta para o menu inicial
                 break; //Fim do caso 2
 
             case 3: //Caso "Sair"
@@ -338,7 +336,7 @@ tPontoLabirinto * AlocaPonto ( )
 
 }
 
-int * AlocaMatriz ( const int*dimensao )
+int * AlocaMatriz ( const int *dimensao )
 {
     int *matriz;
 
@@ -353,15 +351,8 @@ int * AlocaMatriz ( const int*dimensao )
     return matriz;
 }
 
-void LeMatrizPosicao(FILE *entrada , int *matriz , const int*dimensao , tPontoLabirinto *ponto )
+void LeMatriz(FILE *entrada , int *matriz , const int *dimensao )
 {
-
-    //Atribuição de valores ao ponto
-    fscanf ( entrada , "%d %d\n" , &( ponto->y ) , &( ponto->x ) );
-
-    ponto->x--; /* "Normaliza" os pontos para trabalhar na matriz corretamente */
-    ponto->y--;
-
     //Leitura da matriz
     int i, j;
     for(i = 0; i < *dimensao; i++)
@@ -374,16 +365,42 @@ void LeMatrizPosicao(FILE *entrada , int *matriz , const int*dimensao , tPontoLa
 }
 
 
-int CriaInterface()
+int CriaInterface( int operacao )
 {
     int menu;
-    printf( "Menu Principal:\n(1) Carregar Arquivo de Labirinto e achar saida.\n(2) Sobre e Instrucoes.\n(3) Sair.\n" );
-    printf( "Informe a opcao desejada, 1, 2 ou 3.: " );
-    scanf( "%d" , &menu );
-    return menu;
+    switch ( operacao )
+    {
+        case 0:
+
+            printf( "Menu Principal:\n(1) Carregar Arquivo de Labirinto e achar saida.\n(2) Sobre e Instrucoes.\n(3) Sair.\n" );
+            printf( "Informe a opcao desejada, 1, 2 ou 3.: " );
+            scanf( "%d" , &menu );
+            return menu;
+            break;
+        //Fim do caso 0
+        case 1:
+            system( "cls || clear" ); //Limpa tela no Linux/Windows
+            printf( "O Busca Saida 3000 tem como objetivo achar a saida de qualquer labirinto quadrado," );
+            printf( "basta entrar com o labirinto e ele mostrara por onde sair.\nVoce vai precisar criar um arquivo de texto chamado 'Labirinto' com as seguintes " );
+            printf( "informações:\nNa primeira linha informe a dimensao do labirinto quadrado.\nNa segunda linha informe a posicao x e y inicial " );
+            printf( "no labirinto.\nNa terceira linha em diante informe os elementos booleanos do labirinto.\nMas lembre-se, " );
+            printf( "0 significa caminho obstruido e 1 caminho livre.\nEm seguida coloque o 'Labirinto.txt' na pasta raiz do programa.\n" );
+            printf( "Após o funcionamento do programa sera criado um arquivo 'SaidaLabirinto.txt' mostrando a saida do labrinto.\nDivirta-se\n\n" );
+            printf( "\n\nAutor: Gabriel Rodrigues dos Santos.\nData de Criacao: 18/08/2015.\n" );
+            printf( "Programa totalmente desenvolvido no editor de textos Atom para Ubuntu Linux.\nVersao: 1.0 Beta\n\n" );
+            //Algumas informações sobre como usar o programa e sobre o programa.
+            return 0;
+            break;
+        //Fim do caso 1
+
+        default:
+            operacao = 0;
+            break;
+        //Fim do default
+    }//Fim do switch op
 }
 
-void LimpaCaminho ( int *matriz , int *dimensao )
+void LimpaCaminho ( int *matriz , const int *dimensao )
 {
     int i;
     int j;
@@ -404,7 +421,7 @@ void LimpaTudo( tPontoLabirinto *ponto , int *matrizLabirinto , FILE *entrada , 
     fclose ( saida );
 }
 
-int VerificacaoInicial( tPontoLabirinto *posicaoInicial , int *matrizLabirinto , int *dimensao )
+int VerificacaoInicial( tPontoLabirinto *posicaoInicial , int *matrizLabirinto , const int *dimensao )
 {
     /////////Verificação de todos os elementos da matriz 0 ou 1
     int i, j;
@@ -425,7 +442,7 @@ int VerificacaoInicial( tPontoLabirinto *posicaoInicial , int *matrizLabirinto ,
     //Fim do if matrizLabirinto
 }
 
-void ImprimeMatriz( int *matriz , int *dimensao , FILE *saida )
+void ImprimeMatriz( int *matriz , const int *dimensao , FILE *saida )
 {
     int i;
     int j;
@@ -440,7 +457,7 @@ void ImprimeMatriz( int *matriz , int *dimensao , FILE *saida )
 }
 
 
-void ChecagemETroca( tPontoLabirinto *localAtual , int *matriz , int *dimensao )
+void ChecagemETroca( tPontoLabirinto *localAtual , int *matriz , const int *dimensao )
 {
     //Se não chegou nas extremidades da matriz ou se não é um labirinto sem saida executa
     if ( ( localAtual->x < *dimensao - 1 ) && ( localAtual->y < *dimensao - 1 ) && ( localAtual->x > 0 ) && ( localAtual->y > 0 ) && ( semSaida == 0 ) )
