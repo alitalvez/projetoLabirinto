@@ -205,8 +205,31 @@ int CriaInterface( int );
 ****/
 
 void LeMatriz ( FILE * , int * , const int * );
+/****
+*
+* Título: LeMatriz
+*
+* Autor: Gabriel Rodrigues dos Santos
+*
+* Data de Criação: 04/09/2015
+* Última modificação: 14/09/2015
+*
+* Descrição: Faz a leitura dos valores da matriz booleana indicados pelo usuario.
+*
+* Parâmetros:
+*
+* Entrada: Um ponteiro para o arquivo de entrada, um ponteiro para a matriz vetor e
+* um ponteiro para a dimensao da matriz vetor.
+*
+* Saida:
+*
+*
+* Valor de retorno: [descrição do valor retornado pela função]
+*
+****/
 
-int * AlocaMatriz ( const int* );
+
+int * AlocaMatriz ( const int * );
 
 tPontoLabirinto * AlocaPonto ( );
 
@@ -291,6 +314,8 @@ int main( int argc , char const *argv[] )
                     ImprimeMatriz ( matrizLabirinto , &dimensao , saida ); //Chama função de impressão
 
                     LimpaTudo ( posicaoInicial , matrizLabirinto , entrada , saida ); //Chama funcao de limpeza
+
+                    printf("Saida encontrada com sucesso, procure o arquivo 'SaidaLabirinto.txt' na pasta raiz do programa\n\n");
 
 
                 }
@@ -381,11 +406,11 @@ int CriaInterface( int operacao )
         case 1:
             system( "cls || clear" ); //Limpa tela no Linux/Windows
             printf( "O Busca Saida 3000 tem como objetivo achar a saida de qualquer labirinto quadrado," );
-            printf( "basta entrar com o labirinto e ele mostrara por onde sair.\nVoce vai precisar criar um arquivo de texto chamado 'Labirinto' com as seguintes " );
-            printf( "informações:\nNa primeira linha informe a dimensao do labirinto quadrado.\nNa segunda linha informe a posicao x e y inicial " );
-            printf( "no labirinto.\nNa terceira linha em diante informe os elementos booleanos do labirinto.\nMas lembre-se, " );
+            printf( " basta entrar com o labirinto e ele mostrara por onde sair.\nVoce vai precisar criar um arquivo de texto chamado 'Labirinto.txt' com as seguintes " );
+            printf( "informações:\nNa primeira linha informe a posicao x e y inicial no labirinto.\nNa segunda linha informe a dimensao do labirinto quadrado." );
+            printf( "\nNa terceira linha em diante informe os elementos booleanos do labirinto.\nMas lembre-se, " );
             printf( "0 significa caminho obstruido e 1 caminho livre.\nEm seguida coloque o 'Labirinto.txt' na pasta raiz do programa.\n" );
-            printf( "Após o funcionamento do programa sera criado um arquivo 'SaidaLabirinto.txt' mostrando a saida do labrinto.\nDivirta-se\n\n" );
+            printf( "Após o funcionamento do programa sera criado um arquivo 'SaidaLabirinto.txt' mostrando a saida do labrinto, indicada pelo numeral '3'.\nDivirta-se\n\n" );
             printf( "\n\nAutor: Gabriel Rodrigues dos Santos.\nData de Criacao: 18/08/2015.\n" );
             printf( "Programa totalmente desenvolvido no editor de textos Atom para Ubuntu Linux.\nVersao: 1.0 Beta\n\n" );
             //Algumas informações sobre como usar o programa e sobre o programa.
