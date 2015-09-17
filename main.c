@@ -1,11 +1,11 @@
 /****
 *
-* Título: Labirinto Beta
+* Título: Busca Saida 3000
 *
 * Autor: Gabriel Rodrigues dos Santos
 *
 * Data de Criação: 18/08/2015
-* Última modificação: 20/08/2015
+* Última modificação: 27/09/2015
 *
 * Descrição: O programa tem como objetivo achar a saida de um labirinto qualquer
 * usando condicionais, if e else, e uma unica função recursiva, a função ChecagemETroca.
@@ -77,7 +77,9 @@ void ChecagemETroca( tPontoLabirinto * , int * , const int* );
 * para a nova posição, livre. Se houver alguma bifurcação no caminho o ponto irá
 * se mover para um dos lados até encontrar a saida ou um caminho sem saida. Caso
 * encontre um caminho sem saida, então o ponto irá retornar até o local da bifurcação
-* e ir pelo outro caminho, assim ocorre em qualquer bifurcação.
+* e ir pelo outro caminho, assim ocorre em qualquer bifurcação e com qualquer quantidade
+* de bifurcações, pois o algoritimo procura por locais por onde já passou, '3', e vai modificando
+* para '4' até encontrar novamente '1', chegando assim ao ponto inicial da bifurcação.
 *
 * Parâmetros:
 * Entrada: Um ponteiro para o tipo tPontoLabirinto, um ponteiro para uma matriz vetor
@@ -230,8 +232,48 @@ void LeMatriz ( FILE * , int * , const int * );
 
 
 int * AlocaMatriz ( const int * );
+/****
+*
+* Título: AlocaMatriz
+*
+* Autor: Gabriel Rodrigues dos Santos
+*
+* Data de Criação: 04/09/2015
+* Última modificação: 14/09/2015
+*
+* Descrição: Aloca uma matriz vetor de numeros inteiros
+*
+* Parâmetros:
+* Entrada: Um inteiro que representa a ordem da matriz a ser alocada.
+*
+* Saida: Uma matriz vetor de inteiros
+*
+* Valor de retorno: Função retorna o ponteiro para uma matriz vetor de inteiros
+*
+****/
+
 
 tPontoLabirinto * AlocaPonto ( );
+/****
+*
+* Título: AlocaPonto
+*
+* Autor: Gabriel Rodrigues dos Santos
+*
+* Data de Criação: 04/09/2015
+* Última modificação: 14/09/2015
+*
+* Descrição: Aloca uma struct do tipo tPontoLabirinto.
+*
+* Parâmetros:
+* Entrada: Void
+*
+* Saida: Uma struct do tipo tPontoLabirinto
+*
+* Valor de retorno: Função retorna um ponteiro para uma struct do tipo tPontoLabirinto
+*
+****/
+
 
 
 int semSaida = 0; //Variavel Global que armazena falso se o labirinto tiver saida, verdade se sem saida
@@ -274,14 +316,14 @@ int main( int argc , char const *argv[] )
                 posicaoInicial = AlocaPonto ( ); //Aloca ponto
 
                 //Atribuição de valores ao ponto
-                fscanf ( entrada , "%d %d\n" , &( posicaoInicial->y ) , &( posicaoInicial->x ) );
+                fscanf ( entrada , "%d %d\n" , &( posicaoInicial->y ) , &( posicaoInicial->x ) ); //Leitura do ponto na primeira linha do arquivo
 
                 posicaoInicial->x--; /* "Normaliza" os pontos para trabalhar na matriz corretamente */
                 posicaoInicial->y--;
 
-                fscanf( entrada , "%d\n" , &dimensao );
+                fscanf( entrada , "%d\n" , &dimensao ); //Leitura da dimensao da matriz na segunda linha do arquivo
 
-                matrizLabirinto = AlocaMatriz( &dimensao );
+                matrizLabirinto = AlocaMatriz( &dimensao ); //Chamda para alocação da matriz
 
                 LeMatriz( entrada , matrizLabirinto , &dimensao ); //Chamada de leitura da matriz
 
@@ -392,7 +434,10 @@ void LeMatriz(FILE *entrada , int *matriz , const int *dimensao )
 
 int CriaInterface( int operacao )
 {
-    int menu;
+    int menu; //Recebe o comando a ser feito no programa
+
+    /*A variavel operacao vai receber qual menu deve imprimir na tela*/
+
     switch ( operacao )
     {
         case 0:
@@ -410,7 +455,7 @@ int CriaInterface( int operacao )
             printf( "informações:\nNa primeira linha informe a posicao x e y inicial no labirinto.\nNa segunda linha informe a dimensao do labirinto quadrado." );
             printf( "\nNa terceira linha em diante informe os elementos booleanos do labirinto.\nMas lembre-se, " );
             printf( "0 significa caminho obstruido e 1 caminho livre.\nEm seguida coloque o 'Labirinto.txt' na pasta raiz do programa.\n" );
-            printf( "Após o funcionamento do programa sera criado um arquivo 'SaidaLabirinto.txt' mostrando a saida do labrinto, indicada pelo numeral '3'.\nDivirta-se\n\n" );
+            printf( "Após o funcionamento do programa sera criado um arquivo 'SaidaLabirinto.txt' mostrando a saida do labrinto, indicada pelo numeral '3'.\n\n" );
             printf( "\n\nAutor: Gabriel Rodrigues dos Santos.\nData de Criacao: 18/08/2015.\n" );
             printf( "Programa totalmente desenvolvido no editor de textos Atom para Ubuntu Linux.\nVersao: 1.0 Beta\n\n" );
             //Algumas informações sobre como usar o programa e sobre o programa.
@@ -442,7 +487,7 @@ void LimpaTudo( tPontoLabirinto *ponto , int *matrizLabirinto , FILE *entrada , 
 {
     free( ponto ); //Liberando memoria
     free ( matrizLabirinto );
-    fclose ( entrada );
+    fclose ( entrada ); //Fechando arquivos
     fclose ( saida );
 }
 
