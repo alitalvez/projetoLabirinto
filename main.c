@@ -434,7 +434,7 @@ void LeMatriz(FILE *entrada , int *matriz , const int *dimensao )
 
 int CriaInterface( int operacao )
 {
-    int menu; //Recebe o comando a ser feito no programa
+    char interacao; //Recebe comando enviado pelo usuario
 
     /*A variavel operacao vai receber qual menu deve imprimir na tela*/
 
@@ -444,8 +444,8 @@ int CriaInterface( int operacao )
 
             printf( "Menu Principal:\n(1) Carregar Arquivo de Labirinto e achar saida.\n(2) Sobre e Instrucoes.\n(3) Sair.\n" );
             printf( "Informe a opcao desejada, 1, 2 ou 3.: " );
-            scanf( "%d" , &menu );
-            return menu;
+            scanf( "%s" , &interacao );
+            return atoi( &interacao ); //Converte a interacao para inteiro e retorna o valor dela
             break;
         //Fim do caso 0
         case 1:
